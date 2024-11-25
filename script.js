@@ -1,5 +1,7 @@
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
+const resetButton = document.getElementById('reset-button');
+const gameOverMessage = document.getElementById('game-over');
 
 let gameWidth = gameArea.offsetWidth;
 let gameHeight = gameArea.offsetHeight;
@@ -19,6 +21,34 @@ document.addEventListener('keydown', (e) => {
     }
     player.style.left = playerX + 'px'; // Update player position
     e.preventDefault(); // Prevent default browser behavior like scroll or cursor movement
+});
+
+// Touch controls for mobile
+let touchStartX = 0;
+let touchEndX = 0;
+
+gameArea.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX; // Record touch start position
+});
+
+gameArea.addEventListener('touchmove', (e) => {
+    if (isGameOver) return;
+
+    touchEndX = e.touches[0].clientX; // Record touch move position
+
+    // Smoothly move the player based on touch position
+    let moveX = touchEndX - touchStartX;
+    if (moveX > 0 && playerX < gameWidth) { // Move right
+        playerX += playerSpeed;
+    } else if (moveX < 0 && playerX > 0) { // Move left
+        playerX -= playerSpeed;
+    }
+
+    // Update player position smoothly
+    player.style.left = playerX + 'px' / 2;
+
+    // Prevent scrolling during touchmove
+    e.preventDefault();
 });
 
 // Create falling object
@@ -57,7 +87,7 @@ function moveFallingObject(object) {
         // Check for collision
         if (checkCollision(object)) {
             isGameOver = true;
-            document.getElementById('game-over').classList.remove('hidden');
+            gameOverMessage.classList.remove('hidden');
             clearInterval(fallInterval);
             return;
         }
@@ -79,5 +109,21 @@ function startGame() {
         moveFallingObject(object);
     }, 1000); // Create new object every second
 }
+
+// Reset game function
+function resetGame() {
+    isGameOver = false;
+    gameOverMessage.classList.add('hidden');
+    fallingObjects.forEach(obj => obj.remove()); // Remove all falling objects
+    fallingObjects = [];
+    playerX = gameWidth / 2 - 20; // Reset player position
+    player.style.left = playerX + 'px';
+    startGame();
+}
+
+// Add event listener to the reset button
+resetButton.addEventListener('click', () => {
+    resetGame();
+});
 
 startGame();

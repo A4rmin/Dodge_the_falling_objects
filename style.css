@@ -80,6 +80,22 @@ body {
     display: none;
 }
 
+/* Add the reset button style */
+#reset-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#reset-button:hover {
+    background-color: #e64a19;
+}
+
+
 /* Mobile version styles */
 @media (max-width: 768px) {
     h1 {

@@ -8,7 +8,7 @@ const playerSpeed = 10;
 let isGameOver = false;
 let fallingObjects = [];
 
-// Prevent arrow keys from moving the cursor
+// Prevent default browser action for arrow keys (to prevent cursor movement)
 document.addEventListener('keydown', (e) => {
     if (isGameOver) return;
 
@@ -18,6 +18,7 @@ document.addEventListener('keydown', (e) => {
         playerX += playerSpeed;
     }
     player.style.left = playerX + 'px'; // Update player position
+    e.preventDefault(); // Prevent default browser behavior like scroll or cursor movement
 });
 
 // Create falling object

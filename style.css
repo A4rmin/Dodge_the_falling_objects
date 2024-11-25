@@ -76,9 +76,6 @@ body {
     color: #ff5722;
 }
 
-.hidden {
-    display: none;
-}
 
 /* Add the reset button style */
 #reset-button {
@@ -93,6 +90,75 @@ body {
 
 #reset-button:hover {
     background-color: #e64a19;
+}
+
+/* Popup Styles */
+#pre-game-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: #333;
+}
+
+#popup-content h2 {
+    font-size: 32px;
+}
+
+#popup-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#popup-content li {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+#popup-content a {
+    color: #ff5722;
+    text-decoration: none;
+}
+
+#start-game-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#start-game-btn:hover {
+    background-color: #e64a19;
+}
+
+#game-over {
+    position: absolute;
+    text-align: center;
+    font-size: 24px;
+    width: 100%;
+    top: 40%;
+    left: 0;
+    z-index: 20;
+}
+
+.hidden {
+    display: none;
 }
 
 

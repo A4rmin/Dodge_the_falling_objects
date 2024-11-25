@@ -2,13 +2,21 @@ const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const resetButton = document.getElementById('reset-button');
 const gameOverMessage = document.getElementById('game-over');
+const startGameButton = document.getElementById('start-game-btn');
+const preGamePopup = document.getElementById('pre-game-popup');
 
 let gameWidth = gameArea.offsetWidth;
 let gameHeight = gameArea.offsetHeight;
 let playerX = gameWidth / 2 - 20;
-const playerSpeed = 10;
+const playerSpeed = 2;  // Lower speed for smoother control
 let isGameOver = false;
 let fallingObjects = [];
+
+// Hide the instructions popup when game starts
+startGameButton.addEventListener('click', () => {
+    preGamePopup.style.display = 'none';
+    startGame();
+});
 
 // Prevent default browser action for arrow keys (to prevent cursor movement)
 document.addEventListener('keydown', (e) => {
@@ -23,7 +31,7 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault(); // Prevent default browser behavior like scroll or cursor movement
 });
 
-// Touch controls for mobile
+// Touch controls for mobile (smoother control)
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -36,16 +44,16 @@ gameArea.addEventListener('touchmove', (e) => {
 
     touchEndX = e.touches[0].clientX; // Record touch move position
 
-    // Smoothly move the player based on touch position
     let moveX = touchEndX - touchStartX;
-    if (moveX > 0 && playerX < gameWidth) { // Move right
-        playerX += playerSpeed;
-    } else if (moveX < 0 && playerX > 0) { // Move left
-        playerX -= playerSpeed;
+    if (Math.abs(moveX) > 10) {  // Add a threshold to make the movement smoother
+        if (moveX > 0 && playerX < gameWidth - 40) { // Move right
+            playerX += playerSpeed;
+        } else if (moveX < 0 && playerX > 0) { // Move left
+            playerX -= playerSpeed;
+        }
+        player.style.left = playerX + 'px'; // Update player position
+        touchStartX = touchEndX; // Reset touch start position for smoother movement
     }
-
-    // Update player position smoothly
-    player.style.left = playerX + 'px' / 2;
 
     // Prevent scrolling during touchmove
     e.preventDefault();
@@ -125,5 +133,3 @@ function resetGame() {
 resetButton.addEventListener('click', () => {
     resetGame();
 });
-
-startGame();

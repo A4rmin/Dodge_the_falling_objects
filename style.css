@@ -1,12 +1,4 @@
 /* General styles */
-h1 {
-    font-style: italic;
-    text-align: center;
-    margin-top: 50px;
-    font-size: 36px;
-    color: #fff;
-}
-
 body {
     margin: 0;
     overflow: hidden;
@@ -36,7 +28,6 @@ body {
     overflow: hidden;
     display: block;
     pointer-events: auto;
-    /* Ensure mouse doesn't interact with the game when using keyboard */
 }
 
 /* Player styling */
@@ -44,7 +35,6 @@ body {
     position: absolute;
     bottom: 10px;
     left: 50%;
-    /* Center player */
     transform: translateX(-50%);
     width: 40px;
     height: 40px;
@@ -64,34 +54,6 @@ body {
     z-index: 5;
 }
 
-/* Game over message */
-#game-over {
-    position: absolute;
-    text-align: center;
-    font-size: 24px;
-    width: 100%;
-    top: 40%;
-    left: 0;
-    z-index: 20;
-    color: #ff5722;
-}
-
-
-/* Add the reset button style */
-#reset-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #ff5722;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#reset-button:hover {
-    background-color: #e64a19;
-}
-
 /* Popup Styles */
 #pre-game-popup {
     position: fixed;
@@ -99,7 +61,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(86, 66, 24, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -112,10 +74,21 @@ body {
     border-radius: 10px;
     text-align: center;
     color: #333;
+    max-width: 90%;
+    /* Added flexibility */
+    width: 500px;
+}
+
+/* Title in popup */
+#popup-content h1 {
+    font-size: 28px;
+    /* Larger size in popup */
+    margin-bottom: 15px;
 }
 
 #popup-content h2 {
     font-size: 32px;
+    margin-bottom: 15px;
 }
 
 #popup-content ul {
@@ -133,6 +106,7 @@ body {
     text-decoration: none;
 }
 
+/* Start game button */
 #start-game-btn {
     padding: 10px 20px;
     font-size: 16px;
@@ -147,6 +121,7 @@ body {
     background-color: #e64a19;
 }
 
+/* Game over message */
 #game-over {
     position: absolute;
     text-align: center;
@@ -155,19 +130,29 @@ body {
     top: 40%;
     left: 0;
     z-index: 20;
+    color: #ff5722;
+}
+
+#reset-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#reset-button:hover {
+    background-color: #e64a19;
 }
 
 .hidden {
     display: none;
 }
 
-
 /* Mobile version styles */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 24px;
-    }
-
     #game-area {
         width: 80vw;
         height: 50vh;
@@ -181,5 +166,35 @@ body {
     .falling-object {
         width: 25px;
         height: 25px;
+    }
+
+    /* Popup Content Adjustment for Mobile */
+    #popup-content {
+        padding: 15px;
+        width: 80%;
+        /* Adjust width on small screens */
+    }
+
+    #popup-content h1 {
+        font-size: 24px;
+    }
+
+    #popup-content h2 {
+        font-size: 28px;
+    }
+
+    #popup-content li {
+        font-size: 16px;
+    }
+}
+
+/* Extra small screen (for very small devices like phones in portrait mode) */
+@media (max-width: 480px) {
+    #popup-content h1 {
+        font-size: 20px;
+    }
+
+    #popup-content h2 {
+        font-size: 24px;
     }
 }

@@ -48,9 +48,10 @@ function pauseGame() {
     isPaused = true;
     pauseButton.textContent = 'Resume';
     scoreDisplay.classList.add('highlight');
-    stopAllIntervals();
-    startCountdown();
+    stopAllIntervals(); // Stop all active intervals
+    countdownDisplay.classList.add('hidden'); // Ensure countdown is hidden
 }
+
 
 function startCountdown() {
     countdownTime = 3;
@@ -70,11 +71,25 @@ function startCountdown() {
 }
 
 function resumeGame() {
+    if (!isPaused) return; // Ensure this only runs when resuming from pause
+
     isPaused = false;
+    countdownTime = 3; // Reset countdown
     pauseButton.textContent = 'Pause';
-    scoreDisplay.classList.remove('highlight');
-    gameIntervals.fallingObjectInterval = setInterval(createFallingObject, 1000);
-    fallingObjects.forEach((object) => moveFallingObject(object));
+    countdownDisplay.classList.remove('hidden');
+    countdownDisplay.textContent = countdownTime;
+
+    gameIntervals.countdownInterval = setInterval(() => {
+        countdownTime--;
+        countdownDisplay.textContent = countdownTime;
+
+        if (countdownTime <= 0) {
+            clearInterval(gameIntervals.countdownInterval);
+            countdownDisplay.classList.add('hidden');
+            gameIntervals.fallingObjectInterval = setInterval(createFallingObject, 1000);
+            fallingObjects.forEach((object) => moveFallingObject(object));
+        }
+    }, 1000);
 }
 
 document.addEventListener('keydown', (e) => {

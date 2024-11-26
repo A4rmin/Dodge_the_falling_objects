@@ -173,6 +173,33 @@ body {
     background-color: #e64a19;
 }
 
+/* Score Display */
+#score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    z-index: 20;
+    color: #ff5722;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Countdown Display */
+#countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: #ff5722;
+    z-index: 30;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+}
+
 /* Mobile version styles */
 @media (max-width: 768px) {
     #game-area {
@@ -228,5 +255,13 @@ body {
 
     #popup-content h2 {
         font-size: 24px;
+    }
+
+    #score {
+        font-size: 16px;
+    }
+
+    #countdown {
+        font-size: 30px;
     }
 }

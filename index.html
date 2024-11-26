@@ -9,11 +9,9 @@
 </head>
 
 <body>
-    <!-- Instructions Popup -->
     <div id="pre-game-popup">
         <div id="popup-content">
             <h1>Welcome to the Game of Uneasiness!</h1>
-
             <h2>Dodge the Falling Objects</h2>
             <p>Welcome to the Dodge the Falling Objects Game!</p>
             <p>Instructions:</p>
@@ -27,27 +25,24 @@
         </div>
     </div>
 
-    <h2>Dodge the Falling Objects</h2>
+    <main id="game-container">
+        <h2>Dodge the Falling Objects</h2>
+        <div id="score" aria-live="polite">Score: 0</div>
+        <div id="countdown" class="hidden" aria-live="assertive"></div>
 
-    <!-- Score Display -->
-    <div id="score">Score: 0</div>
+        <div id="game-area">
+            <div id="player"></div>
+        </div>
 
-    <!-- Countdown Display (Initially hidden) -->
-    <div id="countdown" class="hidden"></div>
+        <div id="game-over" class="hidden" aria-live="assertive">
+            Game Over!
+            <button id="reset-button">Restart</button>
+        </div>
 
-    <div id="game-area">
-        <div id="player"></div>
-    </div>
-
-    <div id="game-over" class="hidden">
-        Game Over!
-        <button id="reset-button">Restart</button>
-    </div>
-
-    <!-- Pause Button -->
-    <div id="pause-container">
-        <button id="pause-button">Pause</button>
-    </div>
+        <div id="pause-container">
+            <button id="pause-button">Pause</button>
+        </div>
+    </main>
 
     <script src="script.js"></script>
 </body>

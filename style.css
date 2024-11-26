@@ -1,10 +1,22 @@
+/* Define variables for reusable styles */
+:root {
+    --primary-color: #ff5722;
+    --secondary-color: #fdd835;
+    --background-color: #333;
+    --text-color: white;
+    --popup-overlay-color: rgba(86, 66, 24, 0.8);
+    --popup-bg-color: #fff;
+    --popup-text-color: #333;
+    --button-hover-color: #e64a19;
+}
+
 /* General styles */
 body {
     margin: 0;
     overflow: hidden;
     font-family: Arial, sans-serif;
     background: #222;
-    color: white;
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,10 +35,9 @@ body {
     height: 60vh;
     max-height: 600px;
     /* Max height for large screens */
-    background: #333;
-    border: 2px solid #fff;
+    background: var(--background-color);
+    border: 2px solid var(--text-color);
     overflow: hidden;
-    display: block;
     pointer-events: auto;
 }
 
@@ -38,7 +49,7 @@ body {
     transform: translateX(-50%);
     width: 40px;
     height: 40px;
-    background: #ff5722;
+    background: var(--primary-color);
     border-radius: 5px;
     z-index: 10;
 }
@@ -49,9 +60,11 @@ body {
     top: 0;
     width: 30px;
     height: 30px;
-    background: #fdd835;
+    background: var(--secondary-color);
     border-radius: 50%;
     z-index: 5;
+    will-change: transform;
+    /* Optimized for animation */
 }
 
 /* Popup Styles */
@@ -61,7 +74,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(86, 66, 24, 0.8);
+    background-color: var(--popup-overlay-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -69,26 +82,27 @@ body {
 }
 
 #popup-content {
-    background-color: #fff;
+    background-color: var(--popup-bg-color);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    color: #333;
+    color: var(--popup-text-color);
     max-width: 90%;
-    /* Added flexibility */
     width: 500px;
+    /* Adjust width on large screens */
 }
 
-/* Title in popup */
+#popup-content h1,
+#popup-content h2 {
+    margin-bottom: 15px;
+}
+
 #popup-content h1 {
     font-size: 28px;
-    /* Larger size in popup */
-    margin-bottom: 15px;
 }
 
 #popup-content h2 {
     font-size: 32px;
-    margin-bottom: 15px;
 }
 
 #popup-content ul {
@@ -102,23 +116,34 @@ body {
 }
 
 #popup-content a {
-    color: #ff5722;
+    color: var(--primary-color);
     text-decoration: none;
 }
 
-/* Start game button */
-#start-game-btn {
+/* Button styles */
+button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #ff5722;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--text-color);
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-#start-game-btn:hover {
-    background-color: #e64a19;
+button:hover {
+    background-color: var(--button-hover-color);
+}
+
+/* Specific buttons */
+#reset-button,
+#start-game-btn {
+    margin-top: 15px;
+}
+
+#pause-button {
+    padding: 10px 20px;
 }
 
 /* Game over message */
@@ -130,47 +155,15 @@ body {
     top: 40%;
     left: 0;
     z-index: 20;
-    color: #ff5722;
+    color: var(--primary-color);
 }
 
-#reset-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #ff5722;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#reset-button:hover {
-    background-color: #e64a19;
-}
-
-.hidden {
-    display: none;
-}
-
-/* Pause Button Styles */
+/* Pause container */
 #pause-container {
     position: absolute;
     top: 10px;
     right: 10px;
     z-index: 15;
-}
-
-#pause-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #ff5722;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#pause-button:hover {
-    background-color: #e64a19;
 }
 
 /* Score Display */
@@ -180,7 +173,7 @@ body {
     left: 10px;
     font-size: 20px;
     z-index: 20;
-    color: #ff5722;
+    color: var(--primary-color);
     background-color: rgba(0, 0, 0, 0.5);
     padding: 5px 10px;
     border-radius: 5px;
@@ -193,14 +186,19 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 40px;
-    color: #ff5722;
+    color: var(--primary-color);
     z-index: 30;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 10px;
     border-radius: 10px;
 }
 
-/* Mobile version styles */
+/* Hidden utility class */
+.hidden {
+    display: none;
+}
+
+/* Mobile styles */
 @media (max-width: 768px) {
     #game-area {
         width: 80vw;
@@ -217,11 +215,9 @@ body {
         height: 25px;
     }
 
-    /* Popup Content Adjustment for Mobile */
     #popup-content {
         padding: 15px;
         width: 80%;
-        /* Adjust width on small screens */
     }
 
     #popup-content h1 {
@@ -247,7 +243,6 @@ body {
     }
 }
 
-/* Extra small screen (for very small devices like phones in portrait mode) */
 @media (max-width: 480px) {
     #popup-content h1 {
         font-size: 20px;

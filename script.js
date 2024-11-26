@@ -35,15 +35,13 @@ function pauseGame() {
     isPaused = true;
     pauseButton.textContent = 'Resume';  // Change button text to "Resume"
     clearInterval(fallingObjectInterval);  // Stop creating new falling objects
-    // Stop all falling objects
-    fallingObjects.forEach((object) => clearInterval(object.interval));
+    fallingObjects.forEach((object) => clearInterval(object.interval)); // Stop moving objects
 }
 
 // Resume the game
 function resumeGame() {
     isPaused = false;
     pauseButton.textContent = 'Pause';  // Change button text to "Pause"
-    // Restart falling objects creation
     fallingObjectInterval = setInterval(createFallingObject, 1000);  // Resume creating new objects
     fallingObjects.forEach((object) => moveFallingObject(object));  // Resume object movements
 }
@@ -61,7 +59,7 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault(); // Prevent default browser behavior like scroll or cursor movement
 });
 
-// Touch controls for mobile (smoother control)
+// Touch controls for mobile (smoother control with resistance)
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -91,18 +89,20 @@ gameArea.addEventListener('touchmove', (e) => {
 
 // Create falling object
 function createFallingObject() {
+    if (isPaused || isGameOver) return; // Prevent creating objects when paused or game over
+
     const object = document.createElement('div');
     object.classList.add('falling-object');
     object.style.left = Math.random() * (gameWidth - 30) + 'px';
     gameArea.appendChild(object);
-    fallingObjects.push(object);
-    moveFallingObject(object);
+    fallingObjects.push({ element: object, position: 0, interval: null });
+    moveFallingObject(fallingObjects[fallingObjects.length - 1]);
 }
 
 // Check for collision between player and falling objects
 function checkCollision(object) {
     const playerRect = player.getBoundingClientRect();
-    const objectRect = object.getBoundingClientRect();
+    const objectRect = object.element.getBoundingClientRect();
 
     return !(playerRect.right < objectRect.left ||
         playerRect.left > objectRect.right ||
@@ -111,29 +111,30 @@ function checkCollision(object) {
 }
 
 // Move falling objects
-function moveFallingObject(object) {
-    let objectY = 0;
-    object.interval = setInterval(() => {
+function moveFallingObject(fallingObject) {
+    let objectY = fallingObject.position;
+    fallingObject.interval = setInterval(() => {
         if (isPaused || isGameOver) {
-            clearInterval(object.interval);  // Stop falling if paused or game over
+            clearInterval(fallingObject.interval);  // Stop falling if paused or game over
             return;
         }
 
         objectY += 5;
-        object.style.top = objectY + 'px';
+        fallingObject.position = objectY; // Update the position
+        fallingObject.element.style.top = objectY + 'px';
 
         // Check for collision
-        if (checkCollision(object)) {
+        if (checkCollision(fallingObject)) {
             isGameOver = true;
             gameOverMessage.classList.remove('hidden');
-            clearInterval(object.interval);
+            fallingObjects.forEach((obj) => clearInterval(obj.interval)); // Stop all falling objects
             return;
         }
 
         // Remove falling object if it goes out of bounds
         if (objectY > gameHeight) {
-            object.remove();
-            clearInterval(object.interval);
+            fallingObject.element.remove();
+            clearInterval(fallingObject.interval);
         }
     }, 50);
 }
@@ -147,7 +148,7 @@ function startGame() {
 function resetGame() {
     isGameOver = false;
     gameOverMessage.classList.add('hidden');
-    fallingObjects.forEach(obj => obj.remove()); // Remove all falling objects
+    fallingObjects.forEach(obj => obj.element.remove()); // Remove all falling objects
     fallingObjects = [];
     playerX = gameWidth / 2 - 20; // Reset player position
     player.style.left = playerX + 'px';

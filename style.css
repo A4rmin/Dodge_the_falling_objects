@@ -151,6 +151,28 @@ body {
     display: none;
 }
 
+/* Pause Button Styles */
+#pause-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 15;
+}
+
+#pause-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#pause-button:hover {
+    background-color: #e64a19;
+}
+
 /* Mobile version styles */
 @media (max-width: 768px) {
     #game-area {
@@ -185,6 +207,16 @@ body {
 
     #popup-content li {
         font-size: 16px;
+    }
+
+    #pause-container {
+        top: 5px;
+        right: 5px;
+    }
+
+    #pause-button {
+        font-size: 14px;
+        padding: 8px 15px;
     }
 }
 

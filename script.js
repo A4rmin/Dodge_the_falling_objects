@@ -5,8 +5,8 @@ const gameOverMessage = document.getElementById('game-over');
 const startGameButton = document.getElementById('start-game-btn');
 const preGamePopup = document.getElementById('pre-game-popup');
 const pauseButton = document.getElementById('pause-button');
-const scoreDisplay = document.getElementById('score'); // Add an element to display score
-const countdownDisplay = document.getElementById('countdown'); // Add an element for countdown
+const scoreDisplay = document.getElementById('score');
+const countdownDisplay = document.getElementById('countdown');
 
 let gameWidth = gameArea.offsetWidth;
 let gameHeight = gameArea.offsetHeight;
@@ -16,9 +16,9 @@ let isGameOver = false;
 let fallingObjects = [];
 let isPaused = false;
 let fallingObjectInterval;
-let score = 0; // Initialize the score variable
-let countdownInterval; // To handle countdown
-let countdownTime = 3; // 3-second countdown before resume
+let score = 0;
+let countdownInterval;
+let countdownTime = 3;
 
 // Hide the instructions popup when game starts
 startGameButton.addEventListener('click', () => {
@@ -28,6 +28,8 @@ startGameButton.addEventListener('click', () => {
 
 // Toggle pause state
 pauseButton.addEventListener('click', () => {
+    if (isGameOver) return;
+
     if (isPaused) {
         resumeGame();
     } else {
@@ -38,16 +40,18 @@ pauseButton.addEventListener('click', () => {
 // Pause the game
 function pauseGame() {
     isPaused = true;
-    pauseButton.textContent = 'Resume'; // Change button text to "Resume"
-    clearInterval(fallingObjectInterval); // Stop creating new falling objects
-    fallingObjects.forEach((object) => clearInterval(object.interval)); // Stop moving objects
-    startCountdown(); // Start countdown before resuming
+    pauseButton.textContent = 'Resume';
+    scoreDisplay.classList.add('highlight'); // Highlight score when paused
+    clearInterval(fallingObjectInterval);
+    fallingObjects.forEach((object) => clearInterval(object.interval));
+    startCountdown();
 }
 
 // Start countdown before resuming the game
 function startCountdown() {
-    countdownDisplay.textContent = countdownTime; // Display the countdown time
-    countdownDisplay.classList.remove('hidden'); // Show countdown
+    countdownTime = 3;
+    countdownDisplay.textContent = countdownTime;
+    countdownDisplay.classList.remove('hidden');
 
     countdownInterval = setInterval(() => {
         countdownTime--;
@@ -55,8 +59,8 @@ function startCountdown() {
 
         if (countdownTime <= 0) {
             clearInterval(countdownInterval);
-            countdownDisplay.classList.add('hidden'); // Hide countdown after it ends
-            resumeGame(); // Resume the game after countdown
+            countdownDisplay.classList.add('hidden');
+            resumeGame();
         }
     }, 1000);
 }
@@ -64,9 +68,10 @@ function startCountdown() {
 // Resume the game
 function resumeGame() {
     isPaused = false;
-    pauseButton.textContent = 'Pause'; // Change button text back to "Pause"
-    fallingObjectInterval = setInterval(createFallingObject, 1000); // Resume creating new objects
-    fallingObjects.forEach((object) => moveFallingObject(object)); // Resume object movements
+    pauseButton.textContent = 'Pause';
+    scoreDisplay.classList.remove('highlight'); // Remove highlight
+    fallingObjectInterval = setInterval(createFallingObject, 1000);
+    fallingObjects.forEach((object) => moveFallingObject(object));
 }
 
 // Prevent default browser action for arrow keys (to prevent cursor movement)
@@ -78,8 +83,8 @@ document.addEventListener('keydown', (e) => {
     } else if (e.key === 'ArrowRight' && playerX < gameWidth - 40) {
         playerX += playerSpeed;
     }
-    player.style.left = playerX + 'px'; // Update player position
-    e.preventDefault(); // Prevent default browser behavior like scroll or cursor movement
+    player.style.left = playerX + 'px';
+    e.preventDefault();
 });
 
 // Touch controls for mobile
@@ -97,13 +102,13 @@ gameArea.addEventListener('touchmove', (e) => {
     let moveX = touchEndX - touchStartX;
 
     if (Math.abs(moveX) > 10) {
-        if (moveX > 0 && playerX < gameWidth - 40) { // Move right
+        if (moveX > 0 && playerX < gameWidth - 40) {
             playerX += playerSpeed;
-        } else if (moveX < 0 && playerX > 0) { // Move left
+        } else if (moveX < 0 && playerX > 0) {
             playerX -= playerSpeed;
         }
         player.style.left = playerX + 'px';
-        touchStartX = touchEndX; // Reset touch start position for smoother movement
+        touchStartX = touchEndX;
     }
 
     e.preventDefault();
@@ -146,9 +151,7 @@ function moveFallingObject(fallingObject) {
         fallingObject.element.style.top = objectY + 'px';
 
         if (checkCollision(fallingObject)) {
-            isGameOver = true;
-            gameOverMessage.classList.remove('hidden');
-            fallingObjects.forEach((obj) => clearInterval(obj.interval)); // Stop all falling objects
+            gameOver();
             return;
         }
 
@@ -161,34 +164,45 @@ function moveFallingObject(fallingObject) {
 
 // Function to start the game
 function startGame() {
-    score = 0; // Reset score when starting a new game
-    scoreDisplay.textContent = score; // Update score display
-    fallingObjectInterval = setInterval(createFallingObject, 1000); // Create new object every second
-    updateScore(); // Start updating the score every second
+    score = 0;
+    scoreDisplay.textContent = `Score: ${score}`;
+    fallingObjectInterval = setInterval(createFallingObject, 1000);
+    updateScore();
 }
 
 // Update score function
 function updateScore() {
     if (isGameOver || isPaused) return;
     score++;
-    scoreDisplay.textContent = score; // Update score on screen
-    setTimeout(updateScore, 1000); // Update score every second
+    scoreDisplay.textContent = `Score: ${score}`;
+    setTimeout(updateScore, 1000);
+}
+
+// Game over function
+function gameOver() {
+    isGameOver = true;
+    gameOverMessage.classList.remove('hidden');
+    gameOverMessage.innerHTML = `Game Over! <br> Score: ${score} <br><button id="reset-button">Restart</button>`;
+
+    document.getElementById('reset-button').addEventListener('click', resetGame);
+
+    fallingObjects.forEach((obj) => clearInterval(obj.interval));
 }
 
 // Reset game function
 function resetGame() {
     isGameOver = false;
     gameOverMessage.classList.add('hidden');
-    fallingObjects.forEach(obj => obj.element.remove());
+    fallingObjects.forEach((obj) => obj.element.remove());
     fallingObjects = [];
     playerX = gameWidth / 2 - 20;
     player.style.left = playerX + 'px';
     score = 0;
-    scoreDisplay.textContent = score;
+    scoreDisplay.textContent = `Score: ${score}`;
     startGame();
 }
 
-// Add event listener to the reset button
-resetButton.addEventListener('click', () => {
-    resetGame();
-});
+// Highlight score when game is paused
+function highlightScore() {
+    scoreDisplay.classList.add('highlight');
+}

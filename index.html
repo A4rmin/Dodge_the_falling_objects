@@ -9,7 +9,13 @@
 </head>
 
 <body>
-    <div id="pre-game-popup">
+    <noscript>
+        <p style="color: white; text-align: center; background: red; padding: 10px;">
+            JavaScript is required to play this game. Please enable JavaScript in your browser settings.
+        </p>
+    </noscript>
+
+    <section id="pre-game-popup" aria-label="Game Welcome Popup">
         <div id="popup-content">
             <h1>Welcome to the Game of Uneasiness!</h1>
             <h2>Dodge the Falling Objects</h2>
@@ -21,26 +27,26 @@
                 <li>Use arrow keys (or swipe left/right on mobile) to move.</li>
             </ul>
             <p>Created by <a href="https://github.com/A4rmin" target="_blank">A4RMIN</a></p>
-            <button id="start-game-btn">Start Game</button>
+            <button id="start-game-btn" aria-label="Start the game">Start Game</button>
         </div>
-    </div>
+    </section>
 
-    <main id="game-container">
+    <main id="game-container" aria-label="Game Main Container">
         <h2>Dodge the Falling Objects</h2>
-        <div id="score" aria-live="polite">Score: 0</div>
-        <div id="countdown" class="hidden" aria-live="assertive"></div>
+        <output id="score" aria-live="polite" aria-label="Current Score">Score: 0</output>
+        <output id="countdown" class="hidden" aria-live="assertive" aria-label="Countdown Timer"></output>
 
-        <div id="game-area">
-            <div id="player"></div>
-        </div>
+        <section id="game-area" aria-label="Game Play Area">
+            <div id="player" aria-label="Player"></div>
+        </section>
 
-        <div id="game-over" class="hidden" aria-live="assertive">
+        <section id="game-over" class="hidden" aria-live="assertive" aria-label="Game Over Message">
             Game Over!
-            <button id="reset-button">Restart</button>
-        </div>
+            <button id="reset-button" aria-label="Restart the game">Restart</button>
+        </section>
 
         <div id="pause-container">
-            <button id="pause-button">Pause</button>
+            <button id="pause-button" aria-label="Pause or Resume the game">Pause</button>
         </div>
     </main>
 

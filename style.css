@@ -10,6 +10,17 @@
     --button-hover-color: #e64a19;
 }
 
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+
+}
+
 /* General styles */
 body {
     margin: 0;
@@ -258,5 +269,32 @@ button:hover {
 
     #countdown {
         font-size: 30px;
+    }
+}
+
+/* General fallback for unsupported Grid or Flexbox */
+@supports not (display: grid) {
+    #game-area {
+        display: block;
+        text-align: center;
+    }
+
+    #player {
+        margin: auto;
+        position: static;
+    }
+
+    .falling-object {
+        margin: auto;
+    }
+}
+
+@supports not (display: flex) {
+    body {
+        display: block;
+    }
+
+    #pre-game-popup {
+        text-align: center;
     }
 }

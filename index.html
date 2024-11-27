@@ -4,8 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>Dodge the Falling Objects Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/icon.png" type="image/x-icon">
+    <meta property="og:title" content="Dodge the Falling Objects">
+    <meta property="og:description"
+        content="Can you dodge all the falling objects? Test your reflexes in this exciting game!">
+    <meta property="og:image" content="assets/thumbnail.webp">
+    <meta property="og:url" content="https://yourgameurl.com">
 </head>
 
 <body>
@@ -15,8 +21,12 @@
         </p>
     </noscript>
 
+    <header>
+        <h1>Dodge the Falling Objects</h1>
+    </header>
+
     <section id="pre-game-popup" aria-label="Game Welcome Popup">
-        <div id="popup-content">
+        <article id="popup-content">
             <h1>Welcome to the Game of Uneasiness!</h1>
             <h2>Dodge the Falling Objects</h2>
             <p>Welcome to the Dodge the Falling Objects Game!</p>
@@ -28,7 +38,7 @@
             </ul>
             <p>Created by <a href="https://github.com/A4rmin" target="_blank">A4RMIN</a></p>
             <button id="start-game-btn" aria-label="Start the game">Start Game</button>
-        </div>
+        </article>
     </section>
 
     <main id="game-container" aria-label="Game Main Container">
@@ -50,6 +60,18 @@
         </div>
     </main>
 
+    <script>
+        // Fallback for unhandled JS errors
+        window.addEventListener("error", (event) => {
+            alert("An unexpected error occurred. Please refresh the page.");
+            console.error(event.error);
+        });
+
+        window.addEventListener("unhandledrejection", (event) => {
+            alert("An unexpected error occurred. Please try again later.");
+            console.error(event.reason);
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 

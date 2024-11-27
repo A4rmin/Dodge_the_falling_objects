@@ -1,3 +1,15 @@
+// Global Error and Rejection Handlers
+window.addEventListener('error', (event) => {
+    console.error('Error occurred:', event.message);
+    alert('An unexpected error occurred. Please reload the game.');
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled Promise Rejection:', event.reason);
+    alert('A technical issue occurred. Please try again.');
+});
+
+// Element References
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const startGameButton = document.getElementById('start-game-btn');
@@ -11,159 +23,132 @@ let gameState = {
     isRunning: false,
     isPaused: false,
     isGameOver: false,
-    isCountdownActive: false,  // New flag to block actions during countdown
+    isCountdownActive: false,
     score: 0,
-    playerX: gameArea.offsetWidth / 2 - 20,
+    playerX: 0,
     fallingObjects: [],
     lastSpawnTime: 0,
     lastUpdateTime: 0,
     countdown: 3,
 };
 
-const playerSpeed = 10; // Increased player speed
-const objectFallSpeed = 2; // Slower falling speed
-const spawnInterval = 1000; // Time between spawns (ms)
+const playerSpeed = 10;
+const objectFallSpeed = 5;
+const spawnInterval = 1200;
 
-// Adjust player initial position
+// Position player initially
+gameState.playerX = gameArea.offsetWidth / 2 - player.offsetWidth / 2;
 player.style.left = `${gameState.playerX}px`;
 
-// Event Listeners
-startGameButton.addEventListener('click', () => {
-    preGamePopup.style.display = 'none';
-    startCountdown();
-});
+// Utility to update score
+function updateScore() {
+    scoreDisplay.textContent = `Score: ${gameState.score}`;
+}
 
-// Pause/Resume button logic
-pauseButton.addEventListener('click', () => {
-    if (gameState.isGameOver) return;
-
-    if (gameState.isPaused) {
-        // If game is paused, resume the game
-        gameState.isPaused = false;
-        pauseButton.textContent = 'Pause';
-        startCountdown(); // Show countdown before resuming
-    } else {
-        // If game is running, pause it
-        gameState.isPaused = true;
-        pauseButton.textContent = 'Resume';
-        countdownDisplay.classList.add('hidden'); // Hide countdown when paused
-    }
-});
-
-// Start the countdown
+// Countdown Function
 function startCountdown() {
-    // Ensure we block game actions during countdown
+    if (gameState.isCountdownActive) return; // Prevent multiple countdowns
     gameState.isCountdownActive = true;
-    gameState.countdown = 3; // Set countdown to 3 seconds
-    countdownDisplay.textContent = gameState.countdown; // Show countdown
-    countdownDisplay.classList.remove('hidden'); // Make countdown visible
+    gameState.countdown = 3;
+    countdownDisplay.textContent = gameState.countdown;
+    countdownDisplay.classList.remove('hidden');
 
-    // Countdown interval logic
     const countdownInterval = setInterval(() => {
         gameState.countdown--;
         countdownDisplay.textContent = gameState.countdown;
 
         if (gameState.countdown <= 0) {
             clearInterval(countdownInterval);
-            countdownDisplay.classList.add('hidden'); // Hide countdown after it ends
-            gameState.isCountdownActive = false; // Countdown has finished
-            startGame(); // Start the game after countdown ends
+            countdownDisplay.classList.add('hidden');
+            gameState.isCountdownActive = false;
+            startGame();
         }
     }, 1000);
 }
 
-// Keyboard Controls
-document.addEventListener('keydown', (e) => {
-    if (!gameState.isRunning || gameState.isPaused || gameState.isCountdownActive) return;  // Block player movement during countdown
-    if (e.key === 'ArrowLeft' && gameState.playerX > 0) {
-        gameState.playerX -= playerSpeed;
-    } else if (e.key === 'ArrowRight' && gameState.playerX < gameArea.offsetWidth - 40) {
-        gameState.playerX += playerSpeed;
-    }
-    player.style.left = `${gameState.playerX}px`;
-    e.preventDefault();
-});
+// Game Start
+function startGame() {
+    console.log('Game Started!');
+    gameState.score = 0; // Reset score
+    updateScore();
+    gameState.isRunning = true;
+    gameState.isGameOver = false;
+    gameState.fallingObjects = [];
+    gameLoop();
+}
 
-// Touch Controls
-let touchStartX = 0;
-gameArea.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-});
-gameArea.addEventListener('touchmove', (e) => {
-    if (!gameState.isRunning || gameState.isPaused || gameState.isCountdownActive) return;  // Block player movement during countdown
-    const touchEndX = e.touches[0].clientX;
-    const moveX = touchEndX - touchStartX;
 
-    if (moveX > 10 && gameState.playerX < gameArea.offsetWidth - 40) {
-        gameState.playerX += playerSpeed;
-    } else if (moveX < -10 && gameState.playerX > 0) {
-        gameState.playerX -= playerSpeed;
-    }
-    player.style.left = `${gameState.playerX}px`;
-    touchStartX = touchEndX;
-    e.preventDefault();
-});
-
-let gameLoopRequest; // Variable to store the animation frame request
-let pauseTimeElapsed = 0; // Track how much time has passed during pause
-
+// Main Game Loop (within the game loop, we will move the player based on the key states)
 function gameLoop() {
-    if (!gameState.isRunning || gameState.isGameOver) return;
+    if (!gameState.isRunning || gameState.isPaused || gameState.isGameOver) return;
 
     const now = Date.now();
+    if (!gameState.lastUpdateTime) gameState.lastUpdateTime = now;
     const deltaTime = now - gameState.lastUpdateTime;
     gameState.lastUpdateTime = now;
 
-    if (gameState.isPaused) {
-        pauseTimeElapsed += deltaTime; // Accumulate time during pause
-        return;  // Skip logic if game is paused
+    // Move player based on key state (continuous movement)
+    if (keyState.left && gameState.playerX > 0) {
+        gameState.playerX -= playerSpeed;
+    } else if (keyState.right && gameState.playerX < gameArea.offsetWidth - player.offsetWidth) {
+        gameState.playerX += playerSpeed;
     }
 
-    // Spawn falling objects at intervals
+    //Spawn falling objects
     if (now - gameState.lastSpawnTime >= spawnInterval) {
         createFallingObject();
         gameState.lastSpawnTime = now;
     }
 
-    // Move falling objects and check collisions
+    // Update falling objects
     gameState.fallingObjects.forEach((fallingObject) => {
         moveFallingObject(fallingObject, deltaTime);
     });
 
-    // Request next animation frame
+    // Update player position
+    player.style.left = `${gameState.playerX}px`;
+
+    // Handle Pause/Resume if Escape key is pressed
+    if (keyState.escape) {
+        keyState.escape = false; // Prevent multiple toggle on a single press
+        if (gameState.isPaused) {
+            resumeGame();
+        } else {
+            pauseGame();
+        }
+    }
+
+    // Continue the game loop
     gameLoopRequest = requestAnimationFrame(gameLoop);
 }
-// Create falling objects
+
+// Create Falling Objects
 function createFallingObject() {
     const object = document.createElement('div');
     object.classList.add('falling-object');
     object.style.left = `${Math.random() * (gameArea.offsetWidth - 30)}px`;
     gameArea.appendChild(object);
-
-    const fallingObject = { element: object, position: 0 };
-    gameState.fallingObjects.push(fallingObject);
+    gameState.fallingObjects.push({ element: object, position: 0 });
 }
 
-
-// Move falling objects (with updated logic to handle delta time correctly)
+// Move Falling Objects
 function moveFallingObject(fallingObject, deltaTime) {
-    fallingObject.position += objectFallSpeed * (deltaTime / 100); // Fall speed adjusted by deltaTime (in seconds)
+    fallingObject.position += objectFallSpeed * (deltaTime / 16); // Normalize to 60 FPS
     fallingObject.element.style.top = `${fallingObject.position}px`;
 
     if (checkCollision(fallingObject)) {
-        gameOver();  // Trigger game over if collision occurs
+        gameOver();
     }
 
-    // Increase score if the object passes the bottom of the screen
     if (fallingObject.position > gameArea.offsetHeight) {
         gameState.score++;
-        scoreDisplay.textContent = `Score: ${gameState.score}`;
+        updateScore();
         fallingObject.element.remove();
         gameState.fallingObjects = gameState.fallingObjects.filter((obj) => obj !== fallingObject);
     }
 }
 
-// Collision detection
+// Collision Detection
 function checkCollision(fallingObject) {
     const playerRect = player.getBoundingClientRect();
     const objectRect = fallingObject.element.getBoundingClientRect();
@@ -174,58 +159,178 @@ function checkCollision(fallingObject) {
         playerRect.top > objectRect.bottom);
 }
 
-// Starting the game
-function startGame() {
-    gameState.score = 0; // Reset score
-    scoreDisplay.textContent = `Score: ${gameState.score}`; // Update score display
-    gameState.isRunning = true; // Set the game as running
-    gameState.isGameOver = false; // Game is not over
-    gameState.fallingObjects = []; // Clear falling objects
-    gameState.playerX = gameArea.offsetWidth / 2 - 20; // Reset player position
-    player.style.left = `${gameState.playerX}px`;
+// Pause and Resume Game
+pauseButton.addEventListener('click', () => {
+    if (gameState.isGameOver) return;
 
-    gameLoop(); // Start the game loop
-}
+    if (gameState.isPaused) {
+        resumeGame();
+    } else {
+        pauseGame();
+    }
+});
 
-// Pause game
 function pauseGame() {
     gameState.isPaused = true;
     pauseButton.textContent = 'Resume';
-    countdownDisplay.classList.add('hidden'); // Hide countdown when paused
+    cancelAnimationFrame(gameLoopRequest);
 }
 
-// Resume game after pause
 function resumeGame() {
     gameState.isPaused = false;
     pauseButton.textContent = 'Pause';
-    countdownDisplay.classList.add('hidden'); // Hide countdown when resumed
-
-    // Adjust falling objects to continue from where they were
-    gameState.fallingObjects.forEach((fallingObject) => {
-        fallingObject.position += (pauseTimeElapsed / 1000) * objectFallSpeed; // Adjust position based on time elapsed during pause
-    });
-
-    pauseTimeElapsed = 0; // Reset pause time elapsed
-
-    gameState.lastUpdateTime = Date.now();  // Reset last update time to avoid jump
-    if (!gameLoopRequest) {  // If there's no active game loop, start it
-        gameLoop();  // Resume game loop
-    }
+    gameState.lastUpdateTime = Date.now(); // Adjust for pause duration
+    gameLoop();
 }
 
 // Game Over
 function gameOver() {
-    gameState.isGameOver = true;
+    console.log('Game Over!');
     gameState.isRunning = false;
+    gameState.isGameOver = true;
+
     gameState.fallingObjects.forEach((obj) => obj.element.remove());
-    gameOverMessage.innerHTML = `Game Over! <br> Score: ${gameState.score} <br><button id="reset-button">Restart</button>`;
+    gameOverMessage.innerHTML = `Game Over!<br>Score: ${gameState.score}<br>`;
+    const resetButton = document.createElement('button');
+    resetButton.textContent = 'Restart';
+    resetButton.onclick = resetGame;
+    gameOverMessage.appendChild(resetButton);
     gameOverMessage.classList.remove('hidden');
-
-    document.getElementById('reset-button').addEventListener('click', resetGame);
 }
 
-// Reset the game
+// Reset Game
 function resetGame() {
+    cancelAnimationFrame(gameLoopRequest);
+    gameState = {
+        ...gameState,
+        isRunning: false,
+        isPaused: false,
+        isGameOver: false,
+        score: 0,
+        fallingObjects: [],
+    };
     gameOverMessage.classList.add('hidden');
-    startGame();
+    updateScore();
+    startCountdown();
 }
+
+// Key Control Variables
+const keyState = {
+    left: false,
+    right: false,
+    escape: false,
+};
+
+// Define key codes for ease of reference
+const KEY_LEFT = 'ArrowLeft';
+const KEY_RIGHT = 'ArrowRight';
+const KEY_ESCAPE = 'Escape';
+
+// Listen for keydown events
+document.addEventListener('keydown', (e) => {
+    if (gameState.isPaused || !gameState.isRunning) return;
+    // Prevent default browser actions for certain keys
+    if (e.key === KEY_LEFT || e.key === KEY_RIGHT || e.key === KEY_ESCAPE) {
+        e.preventDefault();
+    }
+
+    // Update key state when a key is pressed
+    if (e.key === KEY_LEFT) {
+        keyState.left = true;
+    } else if (e.key === KEY_RIGHT) {
+        keyState.right = true;
+    } else if (e.key === KEY_ESCAPE) {
+        keyState.escape = true;
+    }
+});
+
+// Listen for keyup events to stop movement
+document.addEventListener('keyup', (e) => {
+    if (e.key === KEY_LEFT) {
+        keyState.left = false;
+    } else if (e.key === KEY_RIGHT) {
+        keyState.right = false;
+    } else if (e.key === KEY_ESCAPE) {
+        keyState.escape = false;
+    }
+});
+
+// Touch Control Variables
+let touchStartX = 0;
+let touchMoveX = 0;
+let isTouching = false; // Flag to check if the user is touching
+
+// Define a threshold for movement (in pixels)
+const MOVE_THRESHOLD = 10; // Minimum movement to register a change in position
+const DEBOUNCE_TIME = 50;  // Debounce time in milliseconds (to limit movement frequency)
+let lastMoveTime = 0;      // Store the last time movement happened
+
+// Touch Start Event
+gameArea.addEventListener('touchstart', (e) => {
+    // Prevent default scrolling behavior on touch devices
+    e.preventDefault();
+
+    // Only handle the first touch point
+    if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        isTouching = true;  // User has started touching the screen
+    }
+});
+
+// Touch Move Event
+gameArea.addEventListener('touchmove', (e) => {
+    // Prevent default scrolling behavior on touch devices
+    e.preventDefault();
+
+    if (!isTouching || e.touches.length !== 1) return; // Only handle one touch point
+
+    // Update touch position (horizontal) as the user moves their finger
+    touchMoveX = e.touches[0].clientX;
+
+    // Calculate the difference between the starting touch position and current touch position
+    const touchDifference = touchMoveX - touchStartX;
+
+    // Only move the player if the touch moved a significant distance (threshold) and the debounce time has passed
+    const now = Date.now();
+    if (Math.abs(touchDifference) > MOVE_THRESHOLD && now - lastMoveTime > DEBOUNCE_TIME) {
+        // Move the player based on the difference in touch position
+        if (touchDifference > 0 && gameState.playerX < gameArea.offsetWidth - player.offsetWidth) {
+            gameState.playerX += playerSpeed; // Move right
+        } else if (touchDifference < 0 && gameState.playerX > 0) {
+            gameState.playerX -= playerSpeed; // Move left
+        }
+
+        // Update the player's position on the screen
+        player.style.left = `${gameState.playerX}px`;
+
+        // Update the last move time
+        lastMoveTime = now;
+
+        // Optionally, update touchStartX to ensure continuous movement
+        touchStartX = touchMoveX;
+    }
+});
+
+// Touch End Event
+gameArea.addEventListener('touchend', () => {
+    isTouching = false; // User stopped touching
+});
+
+// Optional: Handle touch cancel (if the user removes a finger from the screen)
+gameArea.addEventListener('touchcancel', () => {
+    isTouching = false; // Reset the touch state
+});
+
+
+// Touch End Event (optional)
+// You can handle any cleanup or logic when the touch ends, but it's not always needed for simple movements.
+gameArea.addEventListener('touchend', () => {
+    // Example cleanup if needed
+});
+
+
+// Start Game Button
+startGameButton.addEventListener('click', () => {
+    preGamePopup.style.display = 'none';
+    startCountdown();
+});

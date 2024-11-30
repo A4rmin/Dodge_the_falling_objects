@@ -5,8 +5,8 @@ A simple yet thrilling browser-based game where the player must dodge falling ob
 
 ## 🚀 Demo
 
-Check out the live version [here](https://yourgameurl.com) (Replace with actual deployed URL).
-
+<!-- Check out the live version [here](https://yourgameurl.com) (Replace with actual deployed URL). -->
+Not available right now! 
 ---
 
 ## 📖 Table of Contents
